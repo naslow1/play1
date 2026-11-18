@@ -85,6 +85,24 @@ input:focus{border-color:#d98a1a;box-shadow:0 0 0 3px rgba(242,182,50,.4)}
 .md .tg{font-size:.7rem;letter-spacing:3px;opacity:.7;font-weight:800}
 .md h2{font-family:Georgia,serif;font-size:1.4rem;margin:2px 0 10px;color:#6a2f10}
 .md p{line-height:1.55;margin-bottom:12px;font-size:.96rem}
+.casino-intro{padding:10px 12px;margin:10px 0 12px;border-radius:10px;background:linear-gradient(135deg,#39201c,#702d25 55%,#3c2514);border:2px solid #d29b3c;color:#fff1c9;box-shadow:inset 0 0 18px #0006}
+.casino-wheel-wrap{display:grid;place-items:center;padding:8px 0 14px}
+.casino-wheel{position:relative;width:min(66vw,270px);aspect-ratio:1;border-radius:50%;border:10px solid #573313;box-shadow:0 0 0 4px #d9a93e,0 8px 22px #170d08;transform:rotate(0deg);transition:transform 4.6s cubic-bezier(.08,.78,.12,1);background:conic-gradient(#ad3930 0deg 97.2deg,#d8a332 97.2deg 205.2deg,#39774b 205.2deg 277.2deg,#f0d365 277.2deg 295.2deg,#7650a1 295.2deg 360deg)}
+.casino-wheel:before{content:"";position:absolute;inset:34%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe99e,#b47821 68%,#59320d);border:4px solid #573313;box-shadow:0 2px 8px #0008}
+.casino-wheel:after{content:"Б";position:absolute;inset:0;display:grid;place-items:center;color:#fff1bf;font:900 30px Georgia,serif;text-shadow:0 2px 3px #49230a;z-index:2}
+.wheel-pointer{position:relative;z-index:2;margin-bottom:-5px;color:#ffe37d;font-size:32px;line-height:1;text-shadow:0 2px 4px #000}
+.wheel-legend{display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:.75rem;font-weight:800;margin:0 0 8px}
+.wheel-legend span{padding:5px 7px;border-radius:6px;background:#6a4b2a;color:#fff1ca}
+.quiz-card{padding:12px;border-radius:10px;background:linear-gradient(145deg,#fff3ca,#ecd39a);border:2px solid #9d672a;box-shadow:inset 0 0 14px #a0732726;margin:8px 0 10px}
+.quiz-card .q{font:900 1.08rem/1.35 Georgia,serif;color:#492b12}.quiz-card .tag{font-size:.68rem;letter-spacing:2px;font-weight:900;color:#9b5b1d;margin-bottom:5px}
+.quick-game{padding:16px 12px;border-radius:12px;text-align:center;background:radial-gradient(circle at 50% 0,#fff2bd,#e8c887);border:3px solid #925d27;color:#43260f}
+.quick-game .qg-copy{font:900 1rem/1.35 Georgia,serif;margin-bottom:12px}
+.quick-game button{font:900 1.05rem Georgia,serif;padding:13px 22px;border:3px solid #573313;border-radius:10px;color:#fff4d0;background:linear-gradient(#b67a36,#77461d);box-shadow:0 4px 0 #47270f;cursor:pointer}
+.quick-game button.ready{background:linear-gradient(#7dc94d,#347729);box-shadow:0 0 20px #71d750,0 4px 0 #28591d;transform:scale(1.06)}
+.quick-game .qg-status{min-height:24px;font-weight:900;margin-top:10px;color:#75421a}
+.feature-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}
+.feature-actions .btn{font-size:.7rem;padding:7px 5px}
+.event-chip{font-size:.73rem;line-height:1.35;padding:7px;border-radius:7px;background:#ffe8a8;color:#563414;border:1px solid #bd812e;margin-top:6px;font-weight:800}
 .ch{display:block;width:100%;text-align:left;font-family:inherit;color:var(--ink);background:linear-gradient(180deg,#fff6d8,#efd9a4);border:2px solid #8a5a2b;border-left:7px solid #5a8f2f;padding:10px 14px;margin-bottom:7px;border-radius:8px;cursor:pointer;font-size:.95rem;font-weight:800;transition:.1s;box-shadow:0 2px 0 rgba(90,50,10,.5)}
 .ch small{display:block;font-weight:600;opacity:.78;font-size:.77rem;margin-top:2px}
 .ch:hover:not(:disabled){transform:translateX(4px);filter:brightness(1.05)}
@@ -213,7 +231,7 @@ const KEY='agro_farm_live_v4',KEYB='agro_farm_live_v4_bak',SKEY='agro_farm_live_
 const SET={mute:false,vol:.7};
 function loadSettings(){try{Object.assign(SET,JSON.parse(localStorage.getItem(SKEY)||'{}'))}catch(e){}}
 function saveSettings(){try{localStorage.setItem(SKEY,JSON.stringify(SET))}catch(e){}}
-let G=null,setupNames=['Настя','Вика','Даша','Алиса','Варя','Катя'],roleChoice=[];
+let G=null,setupNames=['Настя','Вика','Даша','Алиса','Варя','Кани'],roleChoice=[];
 let saveFailureShown=false;
 function save(){
   if(!G||G.demo)return false;
@@ -222,8 +240,8 @@ function save(){
 }
 function normalizeSave(g){
   if(!g||g.v!==4||!Array.isArray(g.players)||g.players.length<2||g.players.length>10)return null;
-  g.players.forEach((p,i)=>{p.id=i;p.b=p.b||{};['tractor','drone','green','hive','mill','fence','dogs'].forEach(k=>{if(p.b[k]===undefined)p.b[k]=0});p.inv=p.inv||{};p.jobs=Array.isArray(p.jobs)?p.jobs:[];p.animals=Array.isArray(p.animals)?p.animals:[];p.pacts=Array.isArray(p.pacts)?p.pacts:[];p.beds=Array.isArray(p.beds)?p.beds:Array.from({length:6},(_,k)=>({soil:k<2?1:0,crop:null,prog:0,grow:0,wet:false,fert:false,fq:false,poison:false,dry:0,mine:null}));p.stats=Object.assign({earned:0,stolen:0,caught:0,betray:0,donated:0,sold:0},p.stats||{});p.hiveClock=p.hiveClock||0});
-  g.mk=g.mk||{};Object.keys(ITEMS).forEach(k=>{g.mk[k]=g.mk[k]||{m:1,sold:0}});if(g.contract){if(g.contract.owner===undefined)g.contract.owner=null;if(!g.contract.stage)g.contract.stage=1}g.log=Array.isArray(g.log)?g.log:[];g.mq=Array.isArray(g.mq)?g.mq:[];g.nightOps=Array.isArray(g.nightOps)?g.nightOps:[];g.crimes=Array.isArray(g.crimes)?g.crimes:[];if(!Number.isFinite(g.day)||g.day<1)g.day=1;if(!Number.isFinite(g.turn)||g.turn<0||g.turn>=g.players.length)g.turn=0;g.v=4;return g
+  g.players.forEach((p,i)=>{p.id=i;p.b=p.b||{};['tractor','drone','green','hive','mill','fence','dogs'].forEach(k=>{if(p.b[k]===undefined)p.b[k]=0});p.inv=p.inv||{};p.jobs=Array.isArray(p.jobs)?p.jobs:[];p.animals=Array.isArray(p.animals)?p.animals:[];p.pacts=Array.isArray(p.pacts)?p.pacts:[];p.beds=Array.isArray(p.beds)?p.beds:Array.from({length:6},(_,k)=>({soil:k<2?1:0,crop:null,prog:0,grow:0,wet:false,fert:false,fq:false,poison:false,dry:0,mine:null}));p.stats=Object.assign({earned:0,stolen:0,caught:0,betray:0,donated:0,sold:0},p.stats||{});p.hiveClock=p.hiveClock||0;p.dailyMission=p.dailyMission&&typeof p.dailyMission==='object'?p.dailyMission:null;p.cache=p.cache&&typeof p.cache==='object'?p.cache:null});
+  g.mk=g.mk||{};Object.keys(ITEMS).forEach(k=>{g.mk[k]=g.mk[k]||{m:1,sold:0}});if(g.contract){if(g.contract.owner===undefined)g.contract.owner=null;if(!g.contract.stage)g.contract.stage=1}g.casino=g.casino&&typeof g.casino==='object'?g.casino:{day:g.day,plays:0,players:[],raidId:null};g.casino.players=Array.isArray(g.casino.players)?g.casino.players.filter(i=>Number.isInteger(i)&&i>=0&&i<g.players.length):[];if(!Number.isFinite(g.casino.day))g.casino.day=g.day;if(!Number.isFinite(g.casino.plays))g.casino.plays=0;if(g.casino.raidId===undefined)g.casino.raidId=null;g.players.forEach(p=>{if(!Number.isFinite(p.quizDay))p.quizDay=0});g.fairEvent=g.fairEvent&&typeof g.fairEvent==='object'?g.fairEvent:null;if(g.fairEvent){g.fairEvent.entries=g.fairEvent.entries&&typeof g.fairEvent.entries==='object'?g.fairEvent.entries:{};g.fairEvent.jinxed=Array.isArray(g.fairEvent.jinxed)?g.fairEvent.jinxed:[];g.fairEvent.raised=Array.isArray(g.fairEvent.raised)?g.fairEvent.raised:[];g.fairEvent.resolved=!!g.fairEvent.resolved}g.crisis=g.crisis&&typeof g.crisis==='object'?g.crisis:null;if(g.crisis){g.crisis.votes=g.crisis.votes&&typeof g.crisis.votes==='object'?g.crisis.votes:{};g.crisis.eligible=Array.isArray(g.crisis.eligible)?g.crisis.eligible.filter(i=>Number.isInteger(i)&&i>=0&&i<g.players.length):g.players.filter(p=>p.jail===0).map(p=>p.id);g.crisis.resolved=!!g.crisis.resolved}g.evidence=Array.isArray(g.evidence)?g.evidence.map(n=>Number.isFinite(n)?Math.max(0,n):0):Array(g.players.length).fill(0);while(g.evidence.length<g.players.length)g.evidence.push(0);if(g.contract){if(g.contract.owner===undefined)g.contract.owner=null;if(!g.contract.stage)g.contract.stage=1}g.log=Array.isArray(g.log)?g.log:[];g.mq=Array.isArray(g.mq)?g.mq:[];g.nightOps=Array.isArray(g.nightOps)?g.nightOps:[];g.crimes=Array.isArray(g.crimes)?g.crimes:[];if(!Number.isFinite(g.day)||g.day<1)g.day=1;if(!Number.isFinite(g.turn)||g.turn<0||g.turn>=g.players.length)g.turn=0;g.v=4;return g
 }
 function loadSave(){for(const k of [KEY,KEYB]){try{const s=localStorage.getItem(k);if(!s)continue;const g=normalizeSave(JSON.parse(s));if(g&&!g.demo)return g}catch(e){}}return null}
 window.addEventListener('beforeunload',save);
@@ -361,11 +379,11 @@ function newPlayer(i,name,role){
     beds:Array.from({length:6},(_,k)=>({soil:k<2?1:0,crop:null,prog:0,grow:0,wet:false,fert:false,fq:false,poison:false,dry:0,mine:null})),
     animals:[],dirt:0,inv:{},jobs:[],hiveClock:0,b:{tractor:0,drone:0,green:0,hive:0,mill:0,fence:0,dogs:0},
     poisoned:false,jail:0,pacts:[],alarm:true,
-    stats:{earned:0,stolen:0,caught:0,betray:0,donated:0,sold:0}};
+    stats:{earned:0,stolen:0,caught:0,betray:0,donated:0,sold:0},dailyMission:null,cache:null,quizDay:0};
 }
 function makeState(names,roles){
   const g={v:4,day:1,act:1,treasury:0,karma:0,heat:10,flags:{lab:false},turn:0,ap:APMAX,steals:0,phase:'day',
-    weather:'clear',wLeft:1,fair:false,contract:null,mk:{},nightOps:[],oid:1,crimes:[],cid:1,log:[],mq:[],over:false,
+    weather:'clear',wLeft:1,fair:false,fairEvent:null,crisis:null,evidence:Array(names.length).fill(0),contract:null,mk:{},casino:{day:1,plays:0,players:[],raidId:null},nightOps:[],oid:1,crimes:[],cid:1,log:[],mq:[],over:false,
     players:names.map((n,i)=>newPlayer(i,n,roles[i]))};
   Object.keys(ITEMS).forEach(k=>g.mk[k]={m:1,sold:0});
   return g;
@@ -1353,9 +1371,10 @@ cv.addEventListener('pointermove',e=>{
     if(drag.moved){const S=curS(),q=clampC(drag.cx-dx/S,drag.cy-dy/S,W.cam.z);W.cam.tx=q.x;W.cam.ty=q.y;W.cam.x=q.x;W.cam.y=q.y;$('#tip').style.display='none';return}
   }
   if(!G||G.demo){return}
-  const w=toWorld(e.clientX,e.clientY),h=hitTest(w.x,w.y);W.hover=h;
+  const w=toWorld(e.clientX,e.clientY),h=hitTest(w.x,w.y),p=G.phase==='day'?cur():null,cache=p&&p.cache&&!p.cache.found&&p.cache.day===G.day?cacheSpotFor(p):null,nearCache=!!(cache&&Math.hypot(w.x-cache.x,w.y-cache.y)<=cache.r);W.hover=h;
   const tip=$('#tip');
-  if(h&&G.phase==='day'){tip.innerHTML=describe(h);tip.style.display='block';tip.style.left=Math.min(innerWidth-250,e.clientX+16)+'px';tip.style.top=(e.clientY+16)+'px';cv.style.cursor='pointer'}
+  if(nearCache&&G.phase==='day'){tip.innerHTML='<b>✨ Тут что-то зарыто</b><br>Щёлкни, чтобы поискать · 1 действие';tip.style.display='block';tip.style.left=Math.min(innerWidth-250,e.clientX+16)+'px';tip.style.top=(e.clientY+16)+'px';cv.style.cursor='pointer'}
+  else if(h&&G.phase==='day'){tip.innerHTML=describe(h);tip.style.display='block';tip.style.left=Math.min(innerWidth-250,e.clientX+16)+'px';tip.style.top=(e.clientY+16)+'px';cv.style.cursor='pointer'}
   else{tip.style.display='none';cv.style.cursor='default'}
 });
 cv.addEventListener('pointerleave',()=>{$('#tip').style.display='none';W.hover=null});
@@ -1466,10 +1485,11 @@ function sideHTML(){
   const pacts=p.pacts.map(x=>`${esc(P(x.w).name)} (${x.d} дн.)`).join(', ')||'нет';
   const jobs=p.jobs.map(j=>`${ITEMS[j.out].e}×${j.qty}`).join(' ')||'—';
   const rows=G.players.map(q=>`<div class="pl${q.id===p.id?' me':''}${q.jail>0?' jl':''}" onclick="focusPlot(${q.id})"><i style="background:${ROLES[q.role].c}"></i>${ROLES[q.role].ico} ${esc(q.name)}${q.jail>0?' ⛓️':''}<span>${q.money}₽</span></div>`).join('');
+  const events=[];if(fairOpen())events.push(`<button class="btn sm y" onclick="openFair()">🎪 Ярмарка</button>`);if(crisisOpen()&&!G.crisis.votes?.[p.id]&&G.crisis.votes?.[p.id]!==0)events.push(`<button class="btn sm r" onclick="openCrisisVote()">⚡ Голосование</button>`);if(p.cache&&p.cache.day===G.day&&!p.cache.found)events.push(`<button class="btn sm b" onclick="openCacheClue()">🗺 Слух о тайнике</button>`);if(G.crisis&&G.crisis.day===G.day&&G.crisis.votes?.[p.id]!==undefined)events.push(`<div class="event-chip">🗳 Голос учтён · итоги после последнего хода</div>`);
   return `<div class="wood"><div class="who"><div class="av">${R.ico}</div><div><div class="nm">${esc(p.name)}</div><div class="rl">${R.name.toUpperCase()}</div></div><div class="mny" style="margin-left:auto">${p.money}₽</div></div>
   <div class="aps">${Array.from({length:APMAX},(_,i)=>`<i class="${i<ap?'':'off'}"></i>`).join('')}</div>
   <div style="font-size:.72rem;opacity:.9">Действий: ${ap}/${APMAX} · вылазок: ${G.steals}/${maxSteals(p)}${p.b.tractor?' · 🚜 вспашка/сбор бесплатны':''}</div>
-  <div class="brow" style="margin-top:8px"><button class="btn sm" onclick="focusMine()">🏠 Мой участок</button><button class="btn sm b" onclick="focusAll()">🌍 Общий вид</button><button class="btn y full" onclick="endTurn()">⏭ ЗАКОНЧИТЬ ХОД</button></div></div>
+  <div class="brow" style="margin-top:8px"><button class="btn sm" onclick="focusMine()">🏠 Мой участок</button><button class="btn sm b" onclick="focusAll()">🌍 Общий вид</button><button class="btn sm r" onclick="openCasino()">🎰 У Барыги</button><button class="btn sm p" onclick="openQuiz()">🧠 Научный штурм</button><button class="btn y full" onclick="endTurn()">⏭ ЗАКОНЧИТЬ ХОД</button></div>${events.length?`<div class="feature-actions">${events.join('')}</div>`:''}</div>
   <div class="paper"><div class="sh">🎒 Склад</div><div class="inv">${inv}</div><div class="hint">⚙ В переработке: ${jobs}<br>🤝 Союзы: ${pacts}</div></div>
   <div class="paper"><div class="sh">🌙 Мои ночные дела</div>${ops}</div>
   <div class="paper"><div class="sh">🏘 Хутора</div>${rows}</div>
@@ -1478,10 +1498,11 @@ function sideHTML(){
 function help(){
   modal({title:'📖 КАК ИГРАТЬ',cancel:true,text:
 `<b>Кликай по объектам на карте</b> — появится круговое меню. Пробел — пропустить ночь или закончить ход; E — закончить ход; F — к своему участку; G — общий вид; M — звук.\n
-🌱 <b>Свой участок:</b> грядки (вспахать → посадить → полить → удобрить → собрать), загон (кормить, чистить, лечить, собирать), дом (вклад в общак), колодец, пустая земля — массовые действия.\n
+🌱 <b>Свой участок:</b> грядки (вспахать → посадить → полить → удобрить → собрать), загон (кормить, чистить, лечить, собирать), дом (вклад в общак), колодец, пустая земля — массовые действия. Быстрая реакция в кормушке и при сборе даёт бонусы.\n
 🏪 <b>Общая зона:</b> Амбар — переработка (×2.5 к цене!) и общак; Рынок — продажа и заказы перекупов; Гараж — трактор, дрон, теплица, пасека и мельница; Загон — животные; Чёрный рынок — псы и справки.\n
 🦹 <b>Участок соседа:</b> клик по грядке/загону/дому/колодцу — кража, налёт, мина, яд, союз. Кражи и яд свершаются <b>ночью</b>, и воры могут нарваться на псов.\n
 ⏱ У каждого ${APMAX} действий за ход. Конец хода — кнопка справа. Колесо мыши — зум, перетаскивание — прокрутка карты.\n
+🤫 После передачи хода игрок получает личное поручение и собственную подсказку на тайник. Раз в 4 дня проходит ярмарка, раз в 5 — общий кризис с голосованием.\n
 Сохранение — автоматически после каждого действия.`});
 }
 
@@ -1493,6 +1514,250 @@ function updateDayTarget(){
   W.targetHour=6.6+12.2*Math.min(1,frac);
 }
 function commit(){save();refreshUI()}
+const CACHE_SPOTS=[
+  {id:'pond',name:'старого пруда',x:COM.pond.x,y:COM.pond.y,r:82,clue:'Старая записка пахнет тиной: «ищи там, где хутор отражается в воде».'},
+  {id:'oak',name:'кривого дуба у левой тропы',x:360,y:548,r:78,clue:'На обороте записки нарисован дуб и три кривые черты. Ищи у левой тропы.'},
+  {id:'fountain',name:'каменного фонтана у рынка',x:COM.fountain.x,y:COM.fountain.y,r:76,clue:'Кто-то прошептал: «монеты звенят рядом с каменным фонтаном».'},
+  {id:'barn',name:'амбарного угла',x:COM.barn.x+COM.barn.w,y:COM.barn.y+COM.barn.h,r:82,clue:'На карте крест у амбарного угла, где скрипит старая доска.'}
+];
+function createDailyMission(p){
+  const candidates=[];
+  if(p.money>=20&&p.beds.some(b=>b.soil&&!b.crop))candidates.push({kind:'plant',title:'Посади любую культуру на своём участке',target:1,progress:0});
+  if(p.beds.some(ripe))candidates.push({kind:'harvest',title:'Собери урожай с одной грядки',target:1,progress:0});
+  if(Object.keys(p.inv).filter(k=>p.inv[k]>0).length>=3)candidates.push({kind:'sellKinds',title:'Продай товары трёх разных видов',target:3,progress:0,items:[]});
+  if(G.act>=3&&p.money>=seedCost(p,'pumpkin')&&p.beds.some(b=>b.soil&&!b.crop))candidates.push({kind:'pumpkin',title:'Посади крипто-тыкву',target:1,progress:0});
+  if(p.animals.some(a=>a.ready))candidates.push({kind:'collect',title:'Собери продукцию из загона',target:1,progress:0});
+  if(p.animals.some(a=>a.hunger>=30))candidates.push({kind:'feed',title:'Накорми голодное животное',target:1,progress:0});
+  if(p.b.dogs>0&&G.nightOps.some(o=>o.to===p.id))candidates.push({kind:'catch',title:'Поймай вора сторожевым псом',target:1,progress:0});
+  if(G.players.length>1)candidates.push({kind:'sabotage',title:'Запланируй ночную вылазку против соседа',target:1,progress:0});
+  candidates.push({kind:'cache',title:'Отыщи личный тайник по подсказке на карте',target:1,progress:0});
+  return Object.assign({day:G.day,done:false,failed:false},pick(candidates));
+}
+function prepareDailyPlayer(p){
+  if(!p.dailyMission||p.dailyMission.day!==G.day)p.dailyMission=createDailyMission(p);
+  if(!p.cache||p.cache.day!==G.day)p.cache={day:G.day,spot:pick(CACHE_SPOTS).id,found:false};
+}
+function showDailyMission(p){
+  prepareDailyPlayer(p);save();const m=p.dailyMission,spot=CACHE_SPOTS.find(x=>x.id===p.cache.spot)||CACHE_SPOTS[0];
+  modal({title:'🤫 ТВОИ ДЕЛА НА СЕГОДНЯ',tag:`ЛИЧНО ДЛЯ ${p.name.toUpperCase()} · НЕ РАССКАЗЫВАЙ СОСЕДЯМ`,
+    text:`<b>Тайное поручение:</b> ${m.title}. Награда — 120₽ и деканат немного остынет. Если не успеешь до конца дня, жар вырастет.\n\n<b>Слух о тайнике:</b> ${spot.clue} Перемещай карту и щёлкни рядом с нужным местом. Поиск стоит 1 действие.`,
+    items:[{label:'Понял(а), начинаю ход ▶',cls:'y'}]});
+}
+function progressDaily(p,kind,data){
+  const m=p&&p.dailyMission;if(!m||m.day!==G.day||m.done||m.failed)return;
+  let matched=false;
+  if(m.kind===kind)matched=true;
+  if(m.kind==='pumpkin'&&kind==='plant'&&data==='pumpkin')matched=true;
+  if(m.kind==='sellKinds'&&kind==='sell'){m.items=m.items||[];if(!m.items.includes(data))m.items.push(data);m.progress=m.items.length;matched=false;if(m.progress>=m.target)completeDailyMission(p,m);return}
+  if(matched){m.progress=(m.progress||0)+1;if(m.progress>=m.target)completeDailyMission(p,m)}
+}
+function completeDailyMission(p,m){
+  if(m.done)return;m.done=true;gain(p,120);hot(-2);kar(1);say(`🤫 ${esc(p.name)} выполнил(а) тайное поручение и получил(а) 120₽.`);SFX.cash();toast(`${p.name}: поручение выполнено · +120₽`);
+}
+function settleDailyMissions(){
+  G.players.forEach(p=>{const m=p.dailyMission;if(m&&m.day===G.day&&!m.done&&!m.failed){m.failed=true;hot(2);say(`📕 ${esc(p.name)} провалил(а) тайное поручение. Жар деканата +2.`)}});
+}
+function cacheSpotFor(p){return CACHE_SPOTS.find(s=>s.id===p.cache?.spot)}
+function searchCacheAt(wx,wy){
+  const p=cur(),c=p&&p.cache,s=c&&cacheSpotFor(p);if(!s||c.day!==G.day||c.found||Math.hypot(wx-s.x,wy-s.y)>s.r)return false;
+  if(!needAP(1))return true;
+  c.found=true;useAP(1);burst(s.x,s.y,'sparkle',18,{s0:8,s1:36,up:-18,l0:.7,l1:1.5,z0:2,z1:4,top:true});SFX.harvest();
+  const roll=Math.random();let detail='';
+  if(roll<.48){const coins=rnd(90,190);gain(p,coins);detail=`В жестянке лежали ${coins}₽.`}
+  else if(roll<.82){const goods=['potato','dill',...(G.act>=2?['melon']:[]),...(G.act>=3?['pumpkin']:[])],k=pick(goods);p.inv[k]=(p.inv[k]||0)+1;detail=`Внутри нашёлся товар: ${ITEMS[k].e} ${ITEMS[k].n} ×1.`}
+  else{const rivals=G.players.filter(q=>q.id!==p.id),targetPlayer=pick(rivals);G.evidence[targetPlayer.id]=(G.evidence[targetPlayer.id]||0)+1;detail=`Внутри — записка с уликой против ${esc(targetPlayer.name)}. Она поможет в ближайшем суде.`}
+  say(`🗺 ${esc(p.name)} нашёл тайник у ${s.name}: ${detail}`);progressDaily(p,'cache');floatPos(s.x,s.y-18,'✨ НАХОДКА','#ffe27a');commit();return true;
+}
+function openCacheClue(){const p=cur();prepareDailyPlayer(p);const s=cacheSpotFor(p);if(p.cache.found){toast('Тайник уже найден');return}modal({title:'🗺 СЛУХИ У КОЛОДЦА',tag:'КАРТА ХУТОРА',text:`${s.clue}\n\nПодойди к этому месту на карте и щёлкни рядом. Поиск стоит 1 действие. Внутри могут быть деньги, товар или улика на соседа.`,items:[{label:'Понял(а), ищу!',cls:'y'}]})}
+let quickGameTimer=null;
+function runQuickGame(title,copy,done){
+  let readyAt=0,finished=false;const finish=reaction=>{if(finished)return;finished=true;clearTimeout(quickGameTimer);closeModal();if(reaction!==null)SFX.ok();else SFX.bad();done(reaction)};
+  modal({title,tag:'КОРОТКАЯ МИНИ-ИГРА · ЖДИ СИГНАЛА',build:box=>{
+    const panel=document.createElement('div');panel.className='quick-game';panel.innerHTML=`<div class="qg-copy">${copy}</div><button id="quick-game-btn" disabled>ПРИГОТОВЬСЯ…</button><div class="qg-status" id="quick-game-status">Не жми, пока лампа не загорится!</div>`;box.appendChild(panel);
+    const button=panel.querySelector('#quick-game-btn'),status=panel.querySelector('#quick-game-status');button.onclick=()=>{if(!readyAt){finish(null);return}const ms=Date.now()-readyAt;finish(ms<=900?ms:null)};
+    quickGameTimer=setTimeout(()=>{if(finished)return;readyAt=Date.now();button.disabled=false;button.textContent='ЖМИ СЕЙЧАС!';button.classList.add('ready');status.textContent='Зелёный сигнал!';SFX.coin();quickGameTimer=setTimeout(()=>finish(null),1500)},rnd(850,2100));
+  }});
+}
+function fairOpen(){return !!(G.fairEvent&&G.fairEvent.day===G.day&&!G.fairEvent.resolved)}
+function fairSubmitGoods(k){
+  const p=cur(),f=G.fairEvent;if(!fairOpen()||f.entries[p.id]||!needAP(1)||(p.inv[k]||0)<1)return;
+  p.inv[k]--;if(!p.inv[k])delete p.inv[k];useAP(1);
+  f.entries[p.id]={score:clamp(Math.round(price(k)/4),20,400),kind:'goods',label:`${ITEMS[k].e} ${ITEMS[k].n}`};
+  say(`🏅 ${esc(p.name)} выставил(а) товар на ярмарке хуторов.`);SFX.ok();commit();openFair();
+}
+function fairRace(){
+  const p=cur(),f=G.fairEvent;if(!fairOpen()||f.entries[p.id]||G.ap<1||W.busy)return;
+  runQuickGame('🚜 ТРАКТОРНЫЙ СПРИНТ','Дождись зелёного флажка и нажми как можно быстрее!',reaction=>{
+    if(reaction===null){toast('Трактор рванул раньше флажка — попытка не засчитана.');openFair();return}
+    if(!fairOpen()||f.entries[p.id]||G.ap<1)return;
+    useAP(1);const score=Math.max(40,Math.round(380-Math.min(1700,reaction)/5));f.entries[p.id]={score,kind:'race',label:`🚜 реакция ${reaction} мс`};
+    say(`🚜 ${esc(p.name)} прошёл тракторный спринт за ${reaction} мс.`);SFX.engine();commit();openFair();
+  });
+}
+function fairJinx(targetId){
+  const p=cur(),f=G.fairEvent,e=f&&f.entries[targetId];if(!fairOpen()||!e||targetId===p.id||f.jinxed?.includes(p.id)||!needAP(1)||p.money<30)return;
+  spend(p,30);useAP(1);f.jinxed=f.jinxed||[];f.jinxed.push(p.id);e.score=Math.max(0,Math.round(e.score*.75));hot(2);
+  say(`🪤 ${esc(p.name)} подложил(а) на ярмарке помятый мешок в телегу ${esc(P(targetId).name)}. Жар +2.`);SFX.bad();commit();openFair();
+}
+function fairRaise(){
+  const p=cur(),f=G.fairEvent,e=f&&f.entries[p.id];if(!fairOpen()||!e||f.raised?.includes(p.id)||!needAP(1)||p.money<50)return;
+  spend(p,50);useAP(1);f.raised=f.raised||[];f.raised.push(p.id);e.score+=80;
+  say(`🪙 ${esc(p.name)} поднял(а) ставку на ярмарке: −50₽ за +80 очков к телеге.`);SFX.coin();commit();openFair();
+}
+function openFair(){
+  if(!fairOpen()){toast('Ярмарка сегодня не проводится');return}
+  const p=cur(),f=G.fairEvent,already=!!f.entries[p.id],goods=Object.keys(p.inv).filter(k=>p.inv[k]>0&&ITEMS[k]);
+  const board=Object.entries(f.entries).map(([id,e])=>`<div>${ROLES[P(+id).role].ico} <b>${esc(P(+id).name)}</b> — ${e.label} <span style="float:right">${e.score} оч.</span></div>`).join('')||'<i>Пока никто не заявился первым.</i>';
+  modal({title:'🎪 ЯРМАРКА ХУТОРОВ',tag:`ДЕНЬ ${G.day} · ПРИЗЫ: 300₽ И 150₽ · ТВОЙ ХОД ${p.name.toUpperCase()}`,
+    text:`<b>Телега гостей:</b> выставь один товар или пройди тракторный спринт. Участие стоит 1 действие. Можно рискнуть и подпортить телегу соперника за 30₽ + действие.\n\n${board}`,
+    cancel:true,items:[
+      ...(!already?goods.map(k=>({label:`${ITEMS[k].e} Выставить ${ITEMS[k].n}`,sub:`1 штука · оценка ${clamp(Math.round(price(k)/4),20,400)} очков`,cls:'y',disabled:G.ap<1,fn:()=>fairSubmitGoods(k)})):[]),
+      ...(!already?[{label:'🚜 Пройти тракторный спринт',sub:'Жди сигнала и жми быстро · 1 действие',cls:'g',disabled:G.ap<1,fn:fairRace}]:[]),
+      ...(already&&!f.raised?.includes(p.id)?[{label:'🪙 Поднять ставку на ярмарке',sub:'50₽ + действие · к своей телеге +80 очков',cls:'y',disabled:G.ap<1||p.money<50,fn:fairRaise}]:[]),
+      ...Object.keys(f.entries).filter(id=>+id!==p.id&&!f.jinxed?.includes(p.id)).map(id=>({label:`🪤 Подпортить телегу ${esc(P(+id).name)}`,sub:'30₽ + действие · счёт соперника −25%',cls:'r',disabled:G.ap<1||p.money<30,fn:()=>fairJinx(+id)})),
+      ...(already?[{label:'Ты уже в состязании',sub:'Дождись итогов ярмарки',disabled:true}]:[])
+    ]});
+}
+function resolveFair(){
+  const f=G.fairEvent;if(!f||f.day!==G.day||f.resolved)return;f.resolved=true;
+  const ranked=Object.entries(f.entries).sort((a,b)=>b[1].score-a[1].score);
+  if(!ranked.length){say('🎪 Ярмарка хуторов закончилась: никто не решился выйти на старт.');return}
+  const top=ranked[0][1].score,winners=ranked.filter(x=>x[1].score===top);const win=pick(winners),winner=P(+win[0]);gain(winner,300);say(`🏆 ${esc(winner.name)} выиграл(а) ярмарку хуторов с результатом ${win[1].score} очков и получил(а) 300₽!`);SFX.cash();
+  const second=ranked.find(x=>+x[0]!==+win[0]&&x[1].score<top);if(second){gain(P(+second[0]),150);say(`🥈 ${esc(P(+second[0]).name)} занял(а) второе место и получил(а) 150₽.`)}
+  banner(`🏆 ЯРМАРКА: ${winner.name.toUpperCase()}`,`Первое место · ${win[1].score} очков`);
+}
+const CRISIS_INFO={
+  drought:{title:'ЗАСУХА НА ХУТОРЕ',text:'Жара трескает землю. Общак может оплатить спасительный полив; один доброволец тоже может спасти свой участок.'},
+  inspection:{title:'ВНЕЗАПНАЯ ПРОВЕРКА',text:'Деканат уже у ворот. Можно заплатить за общую крышу, назначить добровольца или оставить всё как есть.'},
+  mill:{title:'МЕЛЬНИЦУ ЗАКЛИНИЛО',text:'Ветряная мельница скрипит и встала. Если не договориться, этой ночью мука не появится.'}
+};
+function crisisOpen(){return !!(G.crisis&&G.crisis.day===G.day&&!G.crisis.resolved)}
+function openCrisisVote(){
+  if(!crisisOpen()){toast('Общего кризиса сейчас нет');return}
+  const p=cur(),c=G.crisis,fundCost=c.kind==='mill'?250:200,hasVoted=Object.prototype.hasOwnProperty.call(c.votes||{},p.id),eligibleNow=(c.eligible||G.players.map(q=>q.id)).filter(id=>P(id).jail===0),counts={fund:0,skip:0,volunteers:{}};
+  Object.values(c.votes||{}).forEach(v=>{if(v==='fund'||v==='skip')counts[v]++;else if(Number.isInteger(v)){counts.volunteers[v]=(counts.volunteers[v]||0)+1}});
+  const volunteers=Object.entries(counts.volunteers).map(([id,n])=>`${esc(P(+id).name)}: ${n}`).join(' · ')||'пока никто';
+  modal({title:`⚡ ${CRISIS_INFO[c.kind].title}`,tag:`ОБЩЕЕ ГОЛОСОВАНИЕ · ${Object.keys(c.votes||{}).length}/${eligibleNow.length} ГОЛОСОВ`,text:`${CRISIS_INFO[c.kind].text}\n\nОбщак: ${G.treasury}₽ · «Оплатить из общака»: ${counts.fund} · «Ничего не делать»: ${counts.skip} · добровольцы: ${volunteers}. Каждый активный игрок должен отдать голос до конца своего хода.`,cancel:true,items:[
+    {label:'🏦 Решить кризис общими деньгами',sub:`Если выиграет: ${fundCost}₽ из общака, помощь всем`,cls:'y',disabled:hasVoted||G.treasury<fundCost,why:G.treasury<fundCost?`В общаке не хватает ${fundCost}₽`:'Ты уже проголосовал(а)',fn:()=>castCrisisVote('fund')},
+    {label:`🙋 Я беру ответственность на себя, ${p.name}`,sub:'Если большинство назначит тебя: заплати 100₽, получи 130₽ и реши кризис',cls:'g',disabled:hasVoted||p.money<100,why:p.money<100?'Для добровольца нужно 100₽ залога':'Ты уже проголосовал(а)',fn:()=>castCrisisVote(p.id)},
+    {label:'🤷 Оставить всё как есть',sub:'Если это победит: кризис ударит по всем',cls:'r',disabled:hasVoted,why:'Ты уже проголосовал(а)',fn:()=>castCrisisVote('skip')}
+  ]});
+}
+function castCrisisVote(vote){const p=cur(),c=G.crisis;if(!crisisOpen()||c.votes[p.id]!==undefined)return;c.votes[p.id]=vote;say(`🗳 ${esc(p.name)} отдал(а) голос по общему кризису.`);SFX.click();commit();const needed=(c.eligible||G.players.map(q=>q.id)).filter(id=>P(id).jail===0).length;if(Object.keys(c.votes).length>=needed)toast('Все проголосовали — итоги будут после последнего хода')}
+function resolveCrisis(){
+  const c=G.crisis;if(!c||c.day!==G.day||c.resolved)return;c.resolved=true;const votes=Object.values(c.votes||{}),counts={fund:votes.filter(v=>v==='fund').length,skip:votes.filter(v=>v==='skip').length,volunteers:{}};
+  votes.filter(Number.isInteger).forEach(id=>counts.volunteers[id]=(counts.volunteers[id]||0)+1);
+  const activeVoters=Math.max(1,G.players.filter(p=>p.jail===0).length),majority=activeVoters/2;let decision='skip',owner=null,best=0;
+  if(counts.fund>majority)decision='fund';
+  Object.entries(counts.volunteers).forEach(([id,n])=>{if(n>best){best=n;owner=+id}});
+  if(best>majority)decision='volunteer';
+  const fundCost=c.kind==='mill'?250:200;
+  if(decision==='fund'&&G.treasury<fundCost)decision='skip';
+  if(decision==='fund'){
+    tre(-fundCost);
+    if(c.kind==='drought'){G.players.forEach(p=>p.beds.forEach(b=>{if(b.crop)b.wet=true}));G.weather='rain';say(`🌧️ Общак оплатил полив ${fundCost}₽ — засуха отступила.`)}
+    else if(c.kind==='inspection'){hot(-18);say(`🧾 Общак заплатил ${fundCost}₽ за общую крышу. Жар деканата −18.`)}
+    else{G.millPauseDay=0;say(`🌬️ Общак оплатил ремонт мельницы за ${fundCost}₽. Ночная переработка продолжится.`)}
+    SFX.cash();
+  }else if(decision==='volunteer'&&P(owner).money>=100){
+    const p=P(owner);spend(p,100);gain(p,130);
+    if(c.kind==='drought'){p.beds.forEach(b=>{if(b.crop)b.wet=true});say(`🙋 ${esc(p.name)} взял(а) ответственность: полил(а) свой участок и получил(а) 130₽.`)}
+    else if(c.kind==='inspection'){hot(-10);say(`🙋 ${esc(p.name)} отвлёк(ла) проверяющих и получил(а) 130₽. Жар −10.`)}
+    else{G.millPauseDay=0;say(`🙋 ${esc(p.name)} починил(а) мельницу, получил(а) 130₽ и спас(ла) ночной помол.`)}
+    SFX.ok();
+  }else{
+    if(c.kind==='drought'){G.weather='drought';G.wLeft=1;say('🔥 Голоса не спасли хутор от засухи: посевы проведут ночь под палящим солнцем.');hot(4)}
+    else if(c.kind==='inspection'){hot(14);say(`🚨 Проверка прошла без сопротивления. Жар деканата +14: теперь ${G.heat}%.`)}
+    else{G.millPauseDay=G.day;say('🌬️ Мельница осталась сломанной и пропустит один ночной помол.')}
+    SFX.alarm();
+  }
+  c.result=decision;
+}
+/* ====================================================== КАЗИНО «У БАРЫГИ» И НАУЧНЫЙ ШТУРМ */
+const WHEEL_SECTORS=[
+  {id:'lose',label:'Пустой карман',mult:0,deg:97.2,color:'#ad3930'},
+  {id:'onehalf',label:'×1,5',mult:1.5,deg:108,color:'#d8a332'},
+  {id:'double',label:'×2',mult:2,deg:72,color:'#39774b'},
+  {id:'jackpot',label:'Джекпот',mult:0,deg:18,color:'#f0d365'},
+  {id:'dean',label:'Жар деканата +15%',mult:0,deg:64.8,color:'#7650a1'}
+];
+const QUIZ=[
+  {tag:'ВЕБ-РАЗРАБОТКА',q:'Какой тег HTML создаёт ссылку?',a:['<a>','<link>','<url>','<href>'],ok:0,why:'Ссылка создаётся тегом <a> с адресом в href.'},
+  {tag:'CSS',q:'Какое свойство включает гибкую раскладку Flexbox?',a:['display: flex','position: flex','layout: row','float: flex'],ok:0,why:'Контейнеру задают display: flex.'},
+  {tag:'БАЗЫ ДАННЫХ',q:'Что обычно хранит первичный ключ таблицы?',a:['Уникальный идентификатор строки','Пароль базы','Список всех запросов','Цвет интерфейса'],ok:0,why:'Первичный ключ однозначно определяет запись.'},
+  {tag:'JAVASCRIPT',q:'Какой метод добавляет элемент в конец массива?',a:['push()','pop()','shift()','slice()'],ok:0,why:'push() добавляет один или несколько элементов в конец массива.'},
+  {tag:'ОГОРОД',q:'Что поможет грядке пережить сухую ночь?',a:['Полив или дождь','Громкая музыка','Забор повыше','Продажа семян'],ok:0,why:'Вода нужна, чтобы ростки не пересохли.'},
+  {tag:'ХУТОРСКИЙ IT',q:'Сколько серверов нужно, чтобы запустить мельницу?',a:['Ни одного — ей хватает ветра','Семь и один запасной','Только облачный','Сервер с трактором'],ok:0,why:'Для мельницы в игре нужен картофель, а не серверная стойка.'},
+  {tag:'SQL',q:'Как отфильтровать строки в SQL-запросе?',a:['WHERE','ORDER','FILTER BY','ONLY'],ok:0,why:'Условие отбора строк задаёт WHERE.'},
+  {tag:'ХУТОРСКИЙ МЕМ',q:'Кто быстрее всех найдёт пропавший сыр?',a:['Тот, кто его съел','Участковый трактор','Пасека','Мельница'],ok:0,why:'Главный подозреваемый обычно знает, где сыр.'}
+];
+function casinoToday(){if(G.casino.day!==G.day){G.casino={day:G.day,plays:0,players:[],raidId:null}}return G.casino}
+function openCasino(){
+  if(!G||G.demo||G.phase!=='day'||G.over){toast('Палатка открыта только днём');return}
+  const p=cur(),c=casinoToday(),artifacts=['agedCheese','mead','pumpkin','pie','honey','extract'].filter(k=>(p.inv[k]||0)>0);
+  modal({title:'🎰 ПОДПОЛЬНОЕ КАЗИНО «У БАРЫГИ»',tag:`${p.name} · ЖАР ДЕКАНАТА ${G.heat}%`,cancel:true,
+    text:'Одна ставка = одно действие. Ресурсная ставка уходит Барыге, а выигрыш выплачивается рублями по текущей цене рынка. Чем чаще крутите — тем громче сирена ночью.',
+    build:box=>{
+      const raidRisk=c.plays<2?0:Math.min(.8,.15+(c.plays-2)*.17+G.heat/500);const intro=document.createElement('div');intro.className='casino-intro';intro.innerHTML=`<b>Сегодня круток: ${c.plays}</b> · текущий риск облавы этой ночью: ${Math.round(raidRisk*100)}%.<br>Сектора: пусто · ×1,5 · ×2 · бесплатная техника · +15 к жару.`;box.appendChild(intro);
+      const wheel=document.createElement('div');wheel.className='casino-wheel-wrap';wheel.innerHTML='<div class="wheel-pointer">▼</div><div class="casino-wheel" aria-label="Рулетка казино"></div>';box.appendChild(wheel);
+      const legend=document.createElement('div');legend.className='wheel-legend';legend.innerHTML='<span>🟥 ×0 · 27%</span><span>🟨 ×1,5 · 30%</span><span>🟩 ×2 · 20%</span><span>🌟 Трактор / техника · 5%</span><span>🟪 Деканат +15 · 18%</span>';box.appendChild(legend);
+    },
+    items:[
+      ...[50,100,200].map(n=>({label:`🪙 Поставить ${n}₽`,sub:'Ставка сгорит при ×0 · выплата с учётом ставки',cls:'y',disabled:p.money<n||G.ap<1||W.busy,fn:()=>startCasinoSpin('money',n)})),
+      ...artifacts.map(k=>({label:`${ITEMS[k].e} Поставить ${ITEMS[k].n}`,sub:`1 шт · рыночная оценка ${price(k)}₽ · выплата рублями`,cls:'p',disabled:G.ap<1||W.busy,fn:()=>startCasinoSpin(k,1)}))
+    ]});
+}
+function startCasinoSpin(kind,amount){
+  if(!G||G.phase!=='day'||G.over||W.busy||!needAP(1))return;
+  const p=cur(),isCash=kind==='money',value=isCash?amount:price(kind);
+  if(isCash?p.money<amount:(p.inv[kind]||0)<amount){toast('Ставка уже недоступна');return}
+  if(isCash)spend(p,amount);else{p.inv[kind]-=amount;if(p.inv[kind]<=0)delete p.inv[kind]}
+  useAP(1);const c=casinoToday();c.plays++;if(!c.players.includes(p.id))c.players.push(p.id);
+  const extraHeat=2+Math.min(8,c.plays-1);hot(extraHeat);
+  const r=Math.random()*360;let angle=0,outcome=WHEEL_SECTORS[WHEEL_SECTORS.length-1];
+  for(const s of WHEEL_SECTORS){if(r<angle+s.deg){outcome=s;break}angle+=s.deg}
+  const center=angle+outcome.deg/2,rotation=5*360+360-center;
+  say(`🎰 ${esc(p.name)} поставил(а) ${isCash?amount+'₽':ITEMS[kind].e+' '+ITEMS[kind].n} в казино Барыги.`);
+  commit();
+  modal({title:'🎰 КОЛЕСО ФОРТУНЫ',tag:`СТАВКА ${isCash?amount+'₽':ITEMS[kind].e+' '+ITEMS[kind].n} · действие потрачено`,
+    build:box=>{box.innerHTML='<div class="casino-wheel-wrap"><div class="wheel-pointer">▼</div><div id="casino-wheel-spin" class="casino-wheel" aria-label="Колесо вращается"></div></div><div class="casino-intro" id="casino-wheel-status">Барыга крутит колесо… удача уже в пути.</div><div class="wheel-legend"><span>×0 · всё пропало</span><span>×1,5 · выигрыш</span><span>×2 · двойная выплата</span><span>🌟 техника</span><span>🟪 +15 жар деканата</span></div>';requestAnimationFrame(()=>{const w=$('#casino-wheel-spin');if(w)w.style.transform=`rotate(${rotation}deg)`})}});
+  const delays=[140,150,170,190,220,250,290,340,400,480,570,680,800];let i=0;
+  const tick=()=>{if(i>=delays.length)return;SFX.tick();setTimeout(tick,delays[i++])};tick();
+  setTimeout(()=>{
+    if(!G)return;
+    let title='🎰 ИТОГ РУЛЕТКИ',message='';
+    if(outcome.id==='onehalf'||outcome.id==='double'){
+      const payout=Math.round(value*outcome.mult);gain(p,payout);SFX.cash();message=`Колесо остановилось на ${outcome.mult===1.5?'×1,5':'×2'}! Барыга выплачивает ${payout}₽.`;
+    }else if(outcome.id==='jackpot'){
+      let prize='';if(!p.b.tractor){p.b.tractor=1;syncEntities();prize='🚜 Трактор теперь ваш! Вспашка и сбор урожая станут бесплатными.'}
+      else if(!p.b.drone){p.b.drone=1;prize='🛸 Джекпот! Вы выиграли дрон-поливалку.'}
+      else{const payout=Math.max(250,Math.round(value*4));gain(p,payout);prize=`Техника уже есть — Барыга откупился на ${payout}₽.`}
+      SFX.cash();message=`🌟 ДЖЕКПОТ! ${prize}`;title='🌟 ДЖЕКПОТ БАРЫГИ';
+    }else if(outcome.id==='dean'){
+      hot(15);SFX.alarm();W.sirens=2;setTimeout(()=>W.sirens=0,2200);message='🟪 Деканат засёк подпольную ставку: жар вырос на 15 пунктов. Барыга растворился в дыму.';
+    }else{SFX.bad();message=`💨 Сектор ×0. Барыга сгребает ставку стоимостью ${value}₽ и свистит вслед.`}
+    say(`${outcome.id==='dean'?'🚨':outcome.id==='lose'?'💸':'✨'} ${esc(message)}`);
+    commit();modal({title,tag:`${p.name} · осталось действий ${G.ap}`,text:message,items:[{label:'Вернуться к хутору',cls:'y',fn:()=>{}}]});
+  },4700);
+}
+function openQuiz(){
+  if(!G||G.demo||G.phase!=='day'||G.over){toast('Научный совет работает только днём');return}
+  const p=cur();if(p.quizDay===G.day){toast('Сегодня ты уже отвечал(а) на вопрос');return}if(G.ap<1){toast('Нужно хотя бы одно действие');return}if(W.busy){toast('Фермер ещё занят…');return}
+  const source=pick(QUIZ),correctAnswer=source.a[source.ok],q={...source,a:source.a.slice()};
+  for(let i=q.a.length-1;i>0;i--){const j=rnd(0,i);[q.a[i],q.a[j]]=[q.a[j],q.a[i]]}q.ok=q.a.indexOf(correctAnswer);
+  modal({title:'🧠 НАУЧНЫЙ ШТУРМ ДЕКАНАТА',tag:`ХОД ${p.name.toUpperCase()} · ПРАВИЛЬНЫЙ ОТВЕТ: +200₽ И −5 ЖАРА`,
+    build:box=>{const card=document.createElement('div');card.className='quiz-card';card.innerHTML=`<div class="tag">${q.tag} · ОДНА ПОПЫТКА</div><div class="q">${q.q}</div>`;box.appendChild(card)},
+    items:q.a.map((answer,i)=>({label:`${String.fromCharCode(65+i)}. ${esc(answer)}`,fn:()=>resolveQuiz(q,i)}))});
+}
+function resolveQuiz(q,index){
+  if(!G||G.phase!=='day'||G.over)return;
+  const p=cur();if(p.quizDay===G.day||G.ap<1)return;
+  p.quizDay=G.day;useAP(1);
+  const correct=index===q.ok;
+  if(correct){gain(p,200);hot(-5);kar(1);SFX.cash();say(`🧠 ${esc(p.name)} дал(а) правильный ответ в научном штурме и получил(а) 200₽.`)}
+  else{const loss=fine(p,25);hot(2);SFX.bad();say(`🧠 ${esc(p.name)} ошибся(лась) в научном штурме. Действие потрачено, штраф ${loss}₽.`)}
+  commit();modal({title:correct?'🎓 ОТЛИЧНАЯ РАБОТА!':'📚 ДЕКАНАТ НЕ УБЕДИЛСЯ',tag:correct?'ПРАВИЛЬНО · +200₽ · ЖАР −5':'ОШИБКА · ДЕЙСТВИЕ ПОТРАЧЕНО',text:`${q.why}${correct?'\n\nДеканат начислил 200₽ и немного остыл.':`\n\nВерный ответ: ${q.a[q.ok]}. Штраф: ${loss}₽.`}`,items:[{label:'Дальше',cls:correct?'g':'y'}]});
+}
 function act(pos,anim,fn){
   if(W.busy){toast('Фермер ещё занят…');return false}
   const f=W.farm[G.turn];f.task={x:pos.x,y:pos.y,anim,fn,t:0};W.busy=true;return true;
@@ -1536,7 +1801,7 @@ function bedPlant(i,k){
     if(mineBoom(p,i)){commit();return}
     spend(p,cost);useAP(1);
     b.crop=k;b.prog=0;let g=CROPS[k].grow;if(p.role==='nerd'&&g>1)g--;b.grow=g;b.wet=G.weather==='rain';b.dry=0;b.fert=false;b.fq=false;b.poison=false;
-    const c=bedCenter(pl,i);burst(c.x,c.y,'dust',6,{s0:4,s1:16,up:-8,l0:.4,l1:.8,col:'110,75,40'});SFX.plant();say(`🌱 ${esc(p.name)} посадил(а) ${CROPS[k].n}.`);commit();
+    const c=bedCenter(pl,i);burst(c.x,c.y,'dust',6,{s0:4,s1:16,up:-8,l0:.4,l1:.8,col:'110,75,40'});SFX.plant();say(`🌱 ${esc(p.name)} посадил(а) ${CROPS[k].n}.`);progressDaily(p,'plant',k);commit();
   });
 }
 function bedWater(i){
@@ -1578,7 +1843,7 @@ function bedHarvest(i){
     floatPos(c.x,c.y-14,q>0?`+${q} ${ITEMS[it].e}`:'☠️ пусто','#fff');
     burst(c.x,c.y-6,'coin',6,{s0:10,s1:40,up:-30,g:80,l0:.6,l1:1,z0:2.4,z1:3.4,top:true});burst(c.x,c.y,'sparkle',6,{s0:5,s1:25,l0:.6,l1:1.1,z0:2,z1:3.4,top:true});
     b.crop=null;b.prog=0;b.wet=false;b.fert=false;b.fq=false;b.poison=false;b.dry=0;
-    SFX.harvest();say(`🌾 ${esc(p.name)} собрал(а) урожай: ${q>0?ITEMS[it].e+'×'+q:'ничего'}.`);commit();
+    SFX.harvest();say(`🌾 ${esc(p.name)} собрал(а) урожай: ${q>0?ITEMS[it].e+'×'+q:'ничего'}.`);progressDaily(p,'harvest',it);commit();
   });
 }
 function bulk(kind,cropKey){
@@ -1604,13 +1869,16 @@ function doFeed(){
   const p=cur(),pl=W.plots[p.id],hungry=p.animals.filter(a=>a.hunger>=30);
   if(!hungry.length){toast('Все животные сыты');return}
   if(p.money<FEED){toast('Корм стоит 8₽ на зверя');return}
-  if(!needAP(1))return;
-  act(penCenter(pl),'feed',()=>{
-    if(G.ap<1)return;let n=0;
-    for(const a of p.animals){if(a.hunger>=30&&p.money>=FEED){spend(p,FEED);a.hunger=0;n++}}
-    if(!n)return;useAP(1);
-    const e=W.an[p.id]||[];e.forEach(en=>{for(let k=0;k<4;k++)spawn({x:en.x+rf(-8,8),y:en.y-14,type:'grain',vy:rf(0,10),g:90,life:.5,sz:1.6});en.st='peck';en.tm=2});
-    SFX.ok();say(`🍖 ${esc(p.name)} накормил(а) животных (${n}).`);commit();
+  if(!needAP(1)||W.busy)return;
+  runQuickGame('🐔 ПОЙМАЙ КУРОЧКУ','Дождись зелёной лампы и нажми, чтобы точно попасть зёрнышком в кормушку!',reaction=>{
+    const discount=reaction!==null;
+    act(penCenter(pl),'feed',()=>{
+      if(G.ap<1)return;let n=0;const fee=discount?Math.ceil(FEED/2):FEED;
+      for(const a of p.animals){if(a.hunger>=30&&p.money>=fee){spend(p,fee);a.hunger=0;n++}}
+      if(!n)return;useAP(1);
+      const e=W.an[p.id]||[];e.forEach(en=>{for(let k=0;k<4;k++)spawn({x:en.x+rf(-8,8),y:en.y-14,type:'grain',vy:rf(0,10),g:90,life:.5,sz:1.6});en.st='peck';en.tm=2});
+      SFX.ok();say(`🍖 ${esc(p.name)} накормил(а) животных (${n})${discount?' метким броском — корм обошёлся вдвое дешевле':''}.`);progressDaily(p,'feed');commit();
+    });
   });
 }
 function doClean(){
@@ -1625,11 +1893,15 @@ function doClean(){
 function doCollect(){
   const p=cur(),pl=W.plots[p.id],rd=p.animals.filter(a=>a.ready);
   if(!rd.length){toast('Продукции пока нет');return}
-  if(!needAP(1))return;
-  act(penCenter(pl),'harvest',()=>{
-    if(G.ap<1)return;useAP(1);let msg='';
-    p.animals.forEach(a=>{if(a.ready){const it=ANIMALS[a.k].item;p.inv[it]=(p.inv[it]||0)+1;a.ready=false;let t=ANIMALS[a.k].time;if(p.role==='nerd'&&t>1)t--;a.prod=t;msg+=ITEMS[it].e;floatPos(pl.pen.x+rf(20,pl.pen.w-20),pl.pen.y+rf(10,pl.pen.h),'+1 '+ITEMS[it].e,'#fff')}});
-    SFX.harvest();say(`🧺 ${esc(p.name)} собрал(а) продукцию: ${msg}.`);commit();
+  if(!needAP(1)||W.busy)return;
+  const kind=rd[0].k,title=kind==='chick'?'🐔 ПОЙМАЙ КУРОЧКУ':kind==='cow'?'🥛 ПОПАДИ В РИТМ ДОЙКИ':'🐖 НЕ ПРОЛЕЙ ВЕДРО';
+  runQuickGame(title,'Дождись зелёного сигнала! Успех принесёт дополнительную единицу продукции.',reaction=>{
+    act(penCenter(pl),'harvest',()=>{
+      if(G.ap<1)return;useAP(1);let msg='';
+      p.animals.forEach(a=>{if(a.ready){const it=ANIMALS[a.k].item;p.inv[it]=(p.inv[it]||0)+1;a.ready=false;let t=ANIMALS[a.k].time;if(p.role==='nerd'&&t>1)t--;a.prod=t;msg+=ITEMS[it].e;floatPos(pl.pen.x+rf(20,pl.pen.w-20),pl.pen.y+rf(10,pl.pen.h),'+1 '+ITEMS[it].e,'#fff')}});
+      if(reaction!==null){const it=ANIMALS[kind].item;p.inv[it]=(p.inv[it]||0)+1;msg+=` ✨+${ITEMS[it].e}`;floatPos(pl.pen.x+pl.pen.w/2,pl.pen.y+8,'+1 '+ITEMS[it].e,'#ffe27a')}
+      SFX.harvest();say(`🧺 ${esc(p.name)} собрал(а) продукцию: ${msg}.${reaction!==null?' Отличная реакция — дополнительная штука!':''}`);progressDaily(p,'collect');commit();
+    });
   });
 }
 function doVet(i){
@@ -1694,6 +1966,7 @@ function sellItem(k,q){
   gain(p,total);p.stats.sold+=total;
   const share=Math.round(total*.15);tre(share);
   p.pacts.forEach(x=>{const o=P(x.w),b=Math.round(total*.08);if(b>0)gain(o,b)});
+  progressDaily(p,'sell',k);
   const mk=COM.market;burst(mk.x+mk.w/2,mk.y+mk.h-10,'coin',8,{s0:15,s1:55,up:-40,g:90,l0:.6,l1:1,z0:2.4,z1:3.6,top:true});
   floatPos(mk.x+mk.w/2,mk.y+30,'+'+total+'₽','#ffe27a');
   say(`💰 ${esc(p.name)} продал(а) ${ITEMS[k].e}×${q}: +${total}₽ (в общак +${share}₽).`);
@@ -1701,10 +1974,10 @@ function sellItem(k,q){
 }
 function contractPool(p){const stock=Object.keys(p.inv||{}).filter(k=>p.inv[k]>0&&ITEMS[k]);if(stock.length)return stock;const keys=['potato','dill'];if(p.animals.some(a=>a.k==='chick'))keys.push('egg');if(G.act>=2){keys.push('melon');if(p.animals.some(a=>a.k==='pig'))keys.push('bacon')}if(G.act>=3){keys.push('pumpkin');if(p.animals.some(a=>a.k==='cow'))keys.push('milk')}if(G.flags.lab)keys.push('shroom');if(p.b.hive&&(p.hiveClock||0)>=2)keys.push('honey');if(p.b.mill&&(p.inv.flour||0)>0)keys.push('flour');return keys.filter(k=>ITEMS[k])}
 function fulfillContract(){
-  const p=cur(),c=G.contract;if(!c||(p.inv[c.item]||0)<c.qty||(c.owner!==null&&c.owner!==p.id))return;
+  const p=cur(),c=G.contract;if(!c||(p.inv[c.item]||0)<c.qty||(c.owner!==null&&c.owner!==p.id))return;const soldItem=c.item;
   c.owner=p.id;p.inv[c.item]-=c.qty;if(p.inv[c.item]<=0)delete p.inv[c.item];gain(p,c.total);p.stats.sold+=c.total;tre(Math.round(c.total*.15));SFX.cash();
   if(c.stages&&c.stage<c.stages){const stage=c.stage+1,pool=contractPool(p),item=pick(pool),limit=Math.min(stage,p.inv[item]||stage),qty=['honey','flour','milk'].includes(item)?1:rnd(1,limit),total=Math.round(ITEMS[item].v*qty*(1.35+stage*.12)/5)*5;say(`📦 ${esc(p.name)} прошёл этап ${c.stage}/${c.stages}! Следом: ${ITEMS[item].e}×${qty} за ${total}₽ до дня ${G.day+2}.`);G.contract={item,qty,total,deadline:G.day+2,stage,stages:c.stages,owner:p.id};toast(`Заказ ${stage-1}/${c.stages} выполнен — цепочка продолжается!`)}
-  else{say(`📦 ${esc(p.name)} завершил(а) контрактную цепочку и получил(а) ${c.total}₽!`);G.contract=null;toast('Контрактная цепочка завершена!')}commit();
+  else{say(`📦 ${esc(p.name)} завершил(а) контрактную цепочку и получил(а) ${c.total}₽!`);G.contract=null;toast('Контрактная цепочка завершена!')}progressDaily(p,'sell',soldItem);commit();
 }
 function openBarn(){
   const p=cur(),recipes=[...Object.entries(RECIPES).map(([input,out])=>({input,out})),...EXTRA_RECIPES];
@@ -1795,7 +2068,7 @@ function queueOp(kind,toId,idx,cost,okMsg){
     if(G.ap<1)return;
     spend(a,cost);useAP(1);G.steals++;
     G.nightOps.push({id:G.oid++,kind,by:a.id,to:toId,idx:idx||0,cost,done:false});
-    toast(okMsg||'🌙 Вылазка запланирована на ночь');SFX.ok();commit();
+    progressDaily(a,'sabotage');toast(okMsg||'🌙 Вылазка запланирована на ночь');SFX.ok();commit();
   });
 }
 function placeMine(toId,idx){
@@ -1823,7 +2096,7 @@ function onWorldClick(ex,ey){
   if(modalOpen())return;
   closeRadial();
   if(G.phase!=='day'){return}
-  const w=toWorld(ex,ey),h=hitTest(w.x,w.y);
+  const w=toWorld(ex,ey);if(searchCacheAt(w.x,w.y))return;const h=hitTest(w.x,w.y);
   if(!h)return;
   const cu=cur();
   SFX.click();
@@ -1941,11 +2214,12 @@ function foeMenu(h,x,y){
 let handoffCallback=null;
 function showHandoff(p,copy,callback){const R=ROLES[p.role];$('#handoff-icon').textContent=R.ico;$('#handoff-day').textContent=`ДЕНЬ ${G.day} · ПЕРЕДАЙТЕ УСТРОЙСТВО`;$('#handoff-name').textContent=p.name.toUpperCase();$('#handoff-copy').textContent=copy||`${R.name}. Подготовьтесь к заговору против соседей! Только текущий игрок смотрит на экран.`;handoffCallback=callback||null;$('#handoff').classList.add('on');$('#handoff-go').focus()}
 function dismissHandoff(){if(!$('#handoff').classList.contains('on'))return;$('#handoff').classList.remove('on');const cb=handoffCallback;handoffCallback=null;if(cb)cb()}
-function beginTurn(){G.phase='day';G.ap=APMAX;G.steals=0;W.busy=false;W.chainQ=[];save();updateDayTarget();refreshUI();focusPlot(G.turn);const p=cur(),R=ROLES[p.role];cap('');$('#skipn').style.display='none';showHandoff(p,`${R.ico} ${R.name}. Подготовьтесь к заговору против соседей! Только текущий игрок смотрит на экран.`)}
+function beginTurn(){G.phase='day';G.ap=APMAX;G.steals=0;W.busy=false;W.chainQ=[];const p=cur();prepareDailyPlayer(p);save();updateDayTarget();refreshUI();focusPlot(G.turn);const R=ROLES[p.role];cap('');$('#skipn').style.display='none';showHandoff(p,`${R.ico} ${R.name}. Подготовьтесь к заговору против соседей! Только текущий игрок смотрит на экран.`,()=>showDailyMission(p))}
 function firstTurn(){let i=G.players.findIndex(p=>p.jail===0);if(i<0){G.players.forEach(p=>p.jail=0);i=0}return i}
 function endTurn(){
   if(!G||G.phase!=='day'||G.over)return;
   if(modalOpen())return;
+  if(crisisOpen()&&(G.crisis.eligible||[]).includes(G.turn)&&!Object.prototype.hasOwnProperty.call(G.crisis.votes||{},G.turn)){toast('Сначала отдай голос по общему кризису');openCrisisVote();return}
   if(W.busy||W.chainQ.length){toast('Подожди, фермер заканчивает работу…');return}
   const f=W.farm[G.turn];if(f)f.task=null;
   let n=G.turn+1;while(n<G.players.length&&G.players[n].jail>0)n++;
@@ -1953,12 +2227,14 @@ function endTurn(){
   G.turn=n;G.steals=0;G.ap=APMAX;save();beginTurn();
 }
 function dayEnd(){
-  G.phase='night';G.nightOps.sort(()=>Math.random()-.5);save();refreshUI();closeRadial();startNight();
+  resolveFair();resolveCrisis();G.phase='night';G.nightOps.sort(()=>Math.random()-.5);save();refreshUI();closeRadial();startNight();
 }
 function startNight(){
   G.phase='night';W.fast=false;focusAll();
   const mx=W.cam;mx.tz=1.0;
   W.targetHour=22.6;banner('🌙 Ночь опускается на хутор','Тише… кто-то крадётся');
+  const cc=casinoToday();cc.raidId=null;
+  if(cc.plays>=2&&cc.players.length){const chance=Math.min(.8,.15+(cc.plays-2)*.17+G.heat/500);if(Math.random()<chance){cc.raidId=pick(cc.players);const culprit=P(cc.raidId);W.sirens=2;SFX.alarm();setTimeout(()=>W.sirens=0,2400);banner('🚨 НОЧНАЯ ОБЛАВА','Деканат вышел на след подпольных ставок!');say(`🚨 После ${cc.plays} ставок деканат устроил ночную облаву. Под подозрением ${esc(culprit.name)}.`)}}
   $('#skipn').style.display='block';
   later(3600,()=>{
     G.players.forEach(p=>{const d=W.drone[p.id];if(d&&p.beds.some(b=>b.crop&&!b.wet)){d.route=p.beds.map((b,i)=>b.crop?i:-1).filter(i=>i>=0);d.ri=0;d.spray=0}});
@@ -2007,7 +2283,7 @@ function runOp(op,done){
         if(!W.thieves.includes(t)||guardT>6000){clearInterval(chk);return}
         if(dg&&Math.hypot(dg.x-t.x,dg.y-t.y)<16&&!t.bitten){
           t.bitten=true;clearInterval(chk);
-          const f=fine(a,30);v.money+=f;hot(3);a.stats.caught++;
+          const f=fine(a,30);v.money+=f;hot(3);a.stats.caught++;progressDaily(v,'catch');
           burst(t.x,t.y-12,'spark',10,{s0:30,s1:80,l0:.3,l1:.6});SFX.bark();floatPos(t.x,t.y-30,'🐕 ХВАТЬ!','#ff9a7a');
           say(`🐕 Пёс ${esc(v.name)} поймал ${esc(a.name)} на участке! Штраф ${f}₽ в пользу хозяина.`);
           t.bub='😱';
@@ -2095,14 +2371,16 @@ function processNight(){
     p.jobs.forEach(j=>j.left--);
     p.jobs.filter(j=>j.left<=0).forEach(j=>{p.inv[j.out]=(p.inv[j.out]||0)+j.qty;say(`⚙️ У ${esc(p.name)} готово: ${ITEMS[j.out].e}×${j.qty}.`)});
     if(p.b.hive){p.hiveClock=(p.hiveClock||0)+1;if(p.hiveClock>=3){p.hiveClock=0;p.inv.honey=(p.inv.honey||0)+1;say(`🐝 Пасека ${esc(p.name)} дала мёд. Его хватит на продажу или медовуху.`)}}
-    if(p.b.mill&&(p.inv.potato||0)>=2){p.inv.potato-=2;if(!p.inv.potato)delete p.inv.potato;p.inv.flour=(p.inv.flour||0)+1;say(`🌬️ Мельница ${esc(p.name)} смолола картофель в муку.`)}
+    if(p.b.mill&&G.millPauseDay!==G.day&&(p.inv.potato||0)>=2){p.inv.potato-=2;if(!p.inv.potato)delete p.inv.potato;p.inv.flour=(p.inv.flour||0)+1;say(`🌬️ Мельница ${esc(p.name)} смолола картофель в муку.`)}
     p.jobs=p.jobs.filter(j=>j.left>0);
     p.pacts.forEach(x=>x.d--);p.pacts=p.pacts.filter(x=>x.d>0);
     if(p.role==='elder')gain(p,15);
     if(p.jail>0)p.jail--;
     p.alarm=true;
   });
+  if(G.casino&&G.casino.raidId!==null&&G.casino.raidId!==undefined){const suspect=P(G.casino.raidId);if(suspect){const amount=60+Math.max(0,G.casino.plays-2)*35,paid=fine(suspect,amount);hot(8);say(`🚔 Ночная облава: ${esc(suspect.name)} выплатил(а) деканату ${paid}₽ за подпольные ставки.`)}G.casino.raidId=null}
   G.nightOps=[];
+  if(G.millPauseDay===G.day)G.millPauseDay=0;
   hot(rnd(3,7));
   Object.keys(G.mk).forEach(k=>{const m=G.mk[k];m.sold=0;m.m=clamp(lerp(m.m,1,.35)*rf(.84,1.2),.7,1.5)});
   G.fair=false;
@@ -2114,6 +2392,7 @@ function processNight(){
 function dawn(){
   if(G.over)return;
   processNight();
+  settleDailyMissions();
   G.day++;G.turn=firstTurn();G.ap=APMAX;G.steals=0;
   // очередь утра
   G.mq=[];
@@ -2125,6 +2404,8 @@ function dawn(){
     if(oc.length&&Math.random()<.65)G.mq.push({t:'court',cid:pick(oc).id});
     else if(Math.random()<.5)G.mq.push({t:'event',id:rnd(0,EVENTS.length-1)});
   }
+  if(G.day%4===0){G.fair=true;G.fairEvent={day:G.day,entries:{},jinxed:[],raised:[],resolved:false};G.mq.push({t:'fair'})}
+  if(G.day%5===0){const kind=pick(['drought','inspection','mill']),eligible=G.players.filter(p=>p.jail===0).map(p=>p.id);G.crisis={day:G.day,kind,votes:{},eligible:eligible.length?eligible:G.players.map(p=>p.id),resolved:false};G.mq.push({t:'crisis'})}
   G.mq.push({t:'start'});
   G.phase='morning';save();refreshUI();
   W.targetHour=30.6;W.fast=false;$('#skipn').style.display='none';cap('');
@@ -2141,6 +2422,8 @@ function runMQ(){
   if(s.t==='court')courtStep(s,nx);
   else if(s.t==='event')eventStep(s,nx);
   else if(s.t==='actup')actUp(nx);
+  else if(s.t==='fair')fairStep(s,nx);
+  else if(s.t==='crisis')crisisStep(s,nx);
   else nx();
 }
 
@@ -2151,16 +2434,17 @@ function courtStep(s,nx){
   if(!c||c.done){nx();return}
   c.done=true;
   const cul=P(c.cul),vic=P(c.vic),lawyer=cul.role==='lawyer'||vic.role==='lawyer';
+  const hasEvidence=(G.evidence[cul.id]||0)>0;if(hasEvidence)G.evidence[cul.id]--;
   SFX.gavel();focusPlot(c.vic);
   modal({title:'⚖️ РАССЛЕДОВАНИЕ ДЕКАНАТА',tag:`ДЕНЬ ${G.day} · жар ${G.heat}%`,
-    text:`Всплыло старое дело: <b>${esc(vic.name)}</b> заявляет, что <b>${esc(cul.name)}</b> устроил беспредел (${crimeText(c)}). Жар деканата высокий (${G.heat}%).`,
+    text:`Всплыло старое дело: <b>${esc(vic.name)}</b> заявляет, что <b>${esc(cul.name)}</b> устроил беспредел (${crimeText(c)}). Жар деканата высокий (${G.heat}%).${hasEvidence?`<br><br>🗺 В деле есть найденная на хуторе улика против ${esc(cul.name)} — защите будет сложнее.`:''}`,
     items:[
       {label:`Признать вину (${esc(cul.name)})`,cls:'r',fn:()=>{
         const f=fine(cul,c.amt?c.amt+20:50);vic.money+=Math.round(f*.6);kar(-8);hot(5);
         say(`⚖️ Суд признал вину ${esc(cul.name)}. Штраф ${f}₽, большая часть — пострадавшему.`);commit();nx();
       }},
       {label:'Уйти в глухую защиту / свалить вину',cls:'y',fn:()=>{
-        let chance=.45;if(lawyer)chance+=.3;
+        let chance=.45;if(lawyer)chance+=.3;if(hasEvidence)chance-=.35;chance=clamp(chance,.1,.85);
         if(Math.random()<chance){say(`⚖️ Адвокаты и уловки сработали! ${esc(cul.name)} вышел из зала суда чистым.`);commit();nx()}
         else{const f=fine(cul,70);cul.jail=1;hot(10);kar(-12);W.shake=6;SFX.gavel();say(`⚖️ Суд отклонил аргументы! ${esc(cul.name)} получил штраф ${f}₽ и загремел в изолятор на 1 день!`);commit();nx()}
       }}
@@ -2197,6 +2481,8 @@ function eventStep(s,nx){
   SFX.alarm();
   modal({title:'⚡ '+ev.t.toUpperCase(),tag:'СОБЫТИЕ ДНЯ',text:ev.txt,items:[{label:'ПОНЯТНО ▶',cls:'y',fn:()=>{ev.fx();if(G.over)return;commit();nx()}}]});
 }
+function fairStep(s,nx){modal({title:'🎪 ЯРМАРКА ХУТОРОВ',tag:`ДЕНЬ ${G.day} · ТОРГИ И ТРАКТОРНЫЙ СПРИНТ`,text:'На хутор приехали соседи! Выставь товар в телегу или проверь реакцию в тракторной гонке. Победителю — 300₽, второму месту — 150₽. Участие стоит одно действие; соперники могут устроить маленькую пакость.',items:[{label:'Понял(а), иду на ярмарку ▶',cls:'y',fn:()=>{say('🎪 Ярмарка хуторов открыта — торги продлятся до конца дня.');commit();nx()}}]})}
+function crisisStep(s,nx){const c=G.crisis;modal({title:`⚡ ${CRISIS_INFO[c.kind].title}`,tag:'ОБЩИЙ КРИЗИС · КАЖДЫЙ ГОЛОС ВАЖЕН',text:`${CRISIS_INFO[c.kind].text}\n\nКаждый игрок может бесплатно отдать один голос в правой панели: потратить деньги общака, самому взять ответственность или проигнорировать проблему. Итоги — после последнего хода.`,items:[{label:'Понял(а), голосуем ▶',cls:'r',fn:()=>{say(`⚡ На ${G.day}-й день начался общий кризис: ${CRISIS_INFO[c.kind].title.toLowerCase()}.`);commit();nx()}}]})}
 function actUp(nx){
   const a=ACTS[G.act-1];
   if(G.act>=3){endGame(true);return}
@@ -2279,7 +2565,7 @@ function resume(){
   else{
     G.players.forEach(p=>p.beds.forEach(b=>{if(b.mine===undefined)b.mine=null}));
     updateDayTarget();W.hour=W.targetHour;
-    modal({title:'С ВОЗВРАЩЕНИЕМ!',tag:`ДЕНЬ ${G.day}`,text:`Кампания загружена. Продолжает ход: <b>${esc(cur().name)}</b>.`,items:[{label:'ПРОДОЛЖИТЬ ▶',cls:'g',fn:()=>{focusPlot(G.turn)}}]});
+    modal({title:'С ВОЗВРАЩЕНИЕМ!',tag:`ДЕНЬ ${G.day}`,text:`Кампания загружена. Продолжает ход: <b>${esc(cur().name)}</b>.`,items:[{label:'ПРОДОЛЖИТЬ ▶',cls:'g',fn:()=>{prepareDailyPlayer(cur());focusPlot(G.turn);showDailyMission(cur())}}]});
   }
 }
 function resetAll(){
